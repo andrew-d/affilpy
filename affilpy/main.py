@@ -33,17 +33,15 @@ def detect_affiliate(url):
 
     f = furl(url)
     reg = _get_registry(f)
-    if not reg:
-        return False
+    if reg:
+        aff_ids, _ = reg.detect(f)
 
-    aff_ids, _ = reg.detect(f)
+        if len(aff_ids) > 0:
+            return {'affiliate_link': True, 'affiliates': [
+                {'name': reg.NAME, 'id': i} for i in aff_ids
+            ]}
 
-    if len(aff_ids) > 0:
-        return {'affilite_link': True, 'affiliates': [
-            {'name': reg.NAME, 'id': i} for i in aff_ids
-        ]}
-    else:
-        return {'affilite_link': False, 'affiliates': []}
+    return {'affiliate_link': False, 'affiliates': []}
 
 
 def strip_affiliate(url):
@@ -68,7 +66,7 @@ def add_affiliate(url, strip=True):
     function will return the original link.
     """
     aff_info = detect_affiliate(url)
-    if aff_info['affilite_link']:
+    if aff_info['affiliate_link']:
         if strip:
             url = strip_affiliate(url)
         else:
