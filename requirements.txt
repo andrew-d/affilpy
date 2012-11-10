@@ -1,0 +1,3 @@
+PyYAML==3.10
+furl==0.3.3
+orderedmultidict==0.7
