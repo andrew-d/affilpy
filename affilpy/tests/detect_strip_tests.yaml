@@ -51,3 +51,10 @@ is_affiliate: True
 id: Affiliate_ID
 stripped_url: http://amazon.com/exec/obidos/ISBN/0470088702/
 ---
+affil_name: Smashwords
+test_name: test_basic
+urls:
+    - http://smashwords.com/books/view/305?ref=Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://smashwords.com/books/view/305
