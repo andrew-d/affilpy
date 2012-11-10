@@ -1,2 +1,2 @@
-from .main import detect_affiliate, strip_affiliate, add_affiliate
+from .main import AffiliateLinkMgr
 

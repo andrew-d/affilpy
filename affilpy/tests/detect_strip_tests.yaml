@@ -1,0 +1,53 @@
+---
+affil_name: Amazon
+test_name: test_with_tag
+urls:
+    - http://www.amazon.com/dp/B004QGYPYQ/?tag=Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://www.amazon.com/dp/B004QGYPYQ/
+---
+affil_name: Amazon
+test_name: test_with_ASIN_segment
+urls:
+    - http://www.amazon.com/dp/B004QGYPYQ/Affiliate_ID
+    - http://www.amazon.com/dp/B004QGYPYQ/ref=foobar/Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://www.amazon.com/dp/B004QGYPYQ/
+---
+affil_name: Amazon
+test_name: test_with_ISBN_segment
+urls:
+    - http://www.amazon.com/dp/0470088702/Affiliate_ID
+    - http://www.amazon.com/dp/0470088702/ref=something/Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://www.amazon.com/dp/0470088702/
+---
+affil_name: Amazon
+test_name: test_with_ASIN_segment_and_extra
+urls:
+    - http://www.amazon.com/Some-Other-Title/dp/B004QGYPYQ/ref=foobar/Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://www.amazon.com/Some-Other-Title/dp/B004QGYPYQ/
+---
+affil_name: Amazon
+test_name: test_with_explicit_ASIN_segment
+urls:
+    - http://amazon.com/exec/obidos/ASIN/B004QGYPYQ/Affiliate_ID
+    - http://amazon.com/exec/obidos/ASIN/B004QGYPYQ/ref=something/Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://amazon.com/exec/obidos/ASIN/B004QGYPYQ/
+---
+affil_name: Amazon
+test_name: test_with_explicit_ISBN_segment
+urls:
+    - http://amazon.com/exec/obidos/ISBN/0470088702/Affiliate_ID
+    - http://amazon.com/exec/obidos/ISBN/0470088702/ref=something/Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://amazon.com/exec/obidos/ISBN/0470088702/
+---

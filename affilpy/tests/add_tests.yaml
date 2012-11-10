@@ -1,0 +1,5 @@
+---
+name: Amazon
+url: http://www.amazon.com/dp/B004QGYPYQ/
+id: some_affil_id
+expected: http://www.amazon.com/dp/B004QGYPYQ/?tag=some_affil_id

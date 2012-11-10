@@ -1,109 +1,119 @@
 import os
 import sys
+import logbook
 import pkgutil
 
 from furl import furl
 
-# This is our registry of hostnames.
-REGISTRY = {}
+
+class AffiliateLinkMgr(object):
+    def __init__(self, config, debug=False):
+        # Save config, registry.
+        self.config = config
+        self.registry = {}
+
+        # Create logger.
+        self.logger = logbook.Logger('AffiliateLinkMgr')
+
+        # Load all modules.
+        self._load_script_modules()
+        # self.logger.debug("Registry is: %r" % (self.registry))
 
 
-def _get_registry(f):
-    # Lower-case the host.
-    host = f.host.lower()
+    def _get_registry(self, f):
+        # Lower-case the host.
+        host = f.host.lower()
 
-    # Strip the "www." if it exists.
-    if host.startswith('www.'):
-        host = host[4:]
+        # Strip the "www." if it exists.
+        if host.startswith('www.'):
+            host = host[4:]
 
-    # Try getting it.
-    return REGISTRY.get(host)
+        # Try getting it.
+        reg = self.registry.get(host)
 
+        # self.logger.debug("Registry for '%s' is: %r" % (host, reg))
+        return reg
 
-def detect_affiliate(url):
-    """
-    This function detects affiliate links on the given URL.  It will return any
-    affiliate links found in the form of a dictionary:
-        >>> detect_affiliate('http://www.amazon.com/dp/ASIN/?tag=Affiliate_ID')
-        {'affiliate_link': True, 'affiliates': [{'name': 'Amazon', 'id': 'Affiliate_ID'}]}
-    If the given link is not an affiliate link, it will return:
-        >>> detect_affiliate('http://www.othersite.com/')
-        {'affiliate_link': False, 'affiliates': []}
-    """
+    def detect_affiliate(self, url):
+        """
+        This function detects affiliate links on the given URL.  It will return any
+        affiliate links found in the form of a dictionary:
+            >>> detect_affiliate('http://www.amazon.com/dp/ASIN/?tag=Affiliate_ID')
+            {'affiliate_link': True, 'affiliates': [{'name': 'Amazon', 'id': 'Affiliate_ID'}]}
+        If the given link is not an affiliate link, it will return:
+            >>> detect_affiliate('http://www.othersite.com/')
+            {'affiliate_link': False, 'affiliates': []}
+        """
 
-    f = furl(url)
-    reg = _get_registry(f)
-    if reg:
-        aff_ids, _ = reg.detect(f)
+        f = furl(url)
+        reg = self._get_registry(f)
+        if reg:
+            is_affiliate, aff_id, _ = reg.detect(f)
 
-        if len(aff_ids) > 0:
-            return {'affiliate_link': True, 'affiliates': [
-                {'name': reg.NAME, 'id': i} for i in aff_ids
-            ]}
+            if is_affiliate:
+                return {'affiliate_link': True, 'name': reg.NAME, 'id': aff_id}
 
-    return {'affiliate_link': False, 'affiliates': []}
-
-
-def strip_affiliate(url):
-    """
-    This function removes any affiliate links from a given URL.
-    """
-    f = furl(url)
-    reg = _get_registry(f)
-    if not reg:
-        return url
-
-    _, stripped = reg.detect(f)
-
-    return str(stripped)
+        return {'affiliate_link': False}
 
 
-def add_affiliate(url, strip=True):
-    """
-    This function will attempt to make a given link into an affiliate link.
-    If the existing link is already an affiliate link, and the 'strip'
-    parameter is given, the existing affiliate ID is removed.  Otherwise, this
-    function will return the original link.
-    """
-    aff_info = detect_affiliate(url)
-    if aff_info['affiliate_link']:
-        if strip:
-            url = strip_affiliate(url)
-        else:
+    def strip_affiliate(self, url):
+        """
+        This function removes any affiliate links from a given URL.
+        """
+        f = furl(url)
+        reg = self._get_registry(f)
+        if not reg:
             return url
 
-    f = furl(url)
-    reg = _get_registry(f)
-    if not reg:
-        return url
+        is_affiliate, _, stripped = reg.detect(f)
 
-    return str(reg.add(f))
+        return str(stripped)
 
 
-def load_script_modules():
-    our_dir = os.path.abspath(os.path.dirname(__file__))
-    dirname = os.path.join(our_dir, 'sites')
+    def add_affiliate(self, url, strip=True):
+        """
+        This function will attempt to make a given link into an affiliate link.
+        If the existing link is already an affiliate link, and the 'strip'
+        parameter is given, the existing affiliate ID is removed.  Otherwise, this
+        function will return the original link.
+        """
+        aff_info = self.detect_affiliate(url)
+        if aff_info['affiliate_link']:
+            if strip:
+                self.logger.info("Stripping affiliate link")
+                url = self.strip_affiliate(url)
+            else:
+                self.logger.info("Not stripping affiliate link")
+                return url
 
-    for filename in pkgutil.iter_modules(dirname):
-        # Only load modules that are python files, and not our __init__.py
-        name, ext = os.path.splitext(filename)
-        if name == '__init__' or ext != '.py':
-            continue
+        f = furl(url)
+        reg = self._get_registry(f)
+        if not reg:
+            return url
 
-        # Import the module, and get it.
-        root_module = __import__('affilpy.sites', None, None, [name])
-        module = getattr(root_module, name)
-
-        # Instantiate any classes in the registry.
-        reg = module.registry
-        for k, v in reg.items():
-            if isinstance(v, type):
-                reg[k] = v()
-
-        # Save in global registry.
-        REGISTRY.update(reg)
+        return str(reg.add(f))
 
 
-# Load all modules.
-load_script_modules()
+    def _load_script_modules(self):
+        our_dir = os.path.abspath(os.path.dirname(__file__))
+        dirname = os.path.join(our_dir, 'sites')
+
+        for filename in os.listdir(dirname):
+            # Only load modules that are python files, and not our __init__.py
+            name, ext = os.path.splitext(filename)
+            if name == '__init__' or ext != '.py':
+                continue
+
+            # Import the module, and get it.
+            # self.logger.debug("Importing module affilpy.sites.%s" % (name,))
+            root_module = __import__('affilpy.sites', None, None, [name])
+            module = getattr(root_module, name)
+
+            # Get a logger for this plugin.
+            child_logger = logbook.Logger('AffiliateLinkMgr - ' + name)
+
+            # Instantiate any classes in the registry.
+            for k, v in module.registry.items():
+                if isinstance(v, type):
+                    self.registry[k] = v(self.config, child_logger)
 
