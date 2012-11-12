@@ -58,3 +58,19 @@ urls:
 is_affiliate: True
 id: Affiliate_ID
 stripped_url: http://smashwords.com/books/view/305
+---
+affil_name: iTunes
+test_name: test_basic
+urls:
+    - http://itunes.apple.com/us/app/my-recipe-book-your-recipes/id375811859?mt=8&partnerId=30&siteID=Affiliate_ID
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://itunes.apple.com/us/app/my-recipe-book-your-recipes/id375811859?mt=8
+---
+affil_name: LinkShare
+test_name: test_basic
+urls:
+    - http://click.linksynergy.com/fs-bin/click?id=Affiliate_ID&subid=&offerid=258189.1&type=10&tmpid=9388&RD_PARM1=http%3A%2F%2Fwww.kobobooks.com%2Febook%2FGhost-Story-Novel-Dresden-Files%2Fbook-xIEhOH5hO0ewrNKQar5KIg%2Fpage1.html
+is_affiliate: True
+id: Affiliate_ID
+stripped_url: http://www.kobobooks.com/ebook/Ghost-Story-Novel-Dresden-Files/book-xIEhOH5hO0ewrNKQar5KIg/page1.html

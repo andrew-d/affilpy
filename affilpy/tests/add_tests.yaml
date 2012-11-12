@@ -1,10 +1,19 @@
 ---
 name: Amazon
 url: http://www.amazon.com/dp/B004QGYPYQ/
-id: some_affil_id
+config:
+    Amazon: some_affil_id
 expected: http://www.amazon.com/dp/B004QGYPYQ/?tag=some_affil_id
 ---
 name: Smashwords
 url: http://www.smashwords.com/books/view/305
-id: some_affil_id
+config:
+    Smashwords: some_affil_id
 expected: http://www.smashwords.com/books/view/305?ref=some_affil_id
+---
+name: iTunes
+url: http://itunes.apple.com/us/app/my-recipe-book-your-recipes/id375811859?mt=8
+config:
+    iTunes_siteID: some_affil_id
+    iTunes_partnerId: 30
+expected: http://itunes.apple.com/us/app/my-recipe-book-your-recipes/id375811859?mt=8&partnerId=30&siteID=some_affil_id

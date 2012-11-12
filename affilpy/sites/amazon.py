@@ -20,7 +20,6 @@ class AmazonLink(object):
         aff_id = f.query.params.pop('tag', None)
         if aff_id:
             is_affiliate = True
-            self.log.debug("Found 'tag' query string parameter: %s" % (aff_id,))
 
         # Alternate form 1:
         #   http://www.amazon.com/dp/B004QGYPYQ/affiliate_id
@@ -37,27 +36,21 @@ class AmazonLink(object):
         for seg in ['dp', 'asin', 'isbn']:
             try:
                 marker_idx = lower_segments.index(seg)
-                self.log.debug("Index of '%s': %r" % (seg, marker_idx))
             except ValueError:
-                self.log.info("'%s' segment not found in path" % (seg,))
+                pass
 
         # If we found it, and if there are any segments afterwords...
         if marker_idx is not None and marker_idx + 1 < len(segments):
             # Check that the next segment is an ASIN or ISBN.  From Amazon, all
             # ASINs are 10-character alphanumeric.
             id_val = segments[marker_idx + 1]
-            self.log.debug("Found ID value: %s" % (id_val,))
             if ASIN_RE.match(id_val) or ISBN_RE.match(id_val):
                 # This is an ASIN or ISBN, so it works.
-                self.log.debug("ASIN/ISBN is valid!")
                 if marker_idx + 2 < len(segments):
                     removed_segments, segments = segments[marker_idx + 2:], segments[:marker_idx + 2]
 
-                    self.log.debug("Removed segments: %r" % (removed_segments,))
-
                     # Re-add the last segment as blank.
                     segments.append('')
-                    self.log.debug("Re-added blank segment")
 
                     # Drop items from the beginning until we get something that
                     # doesn't look like "ref=something"
@@ -67,17 +60,19 @@ class AmazonLink(object):
                             is_affiliate = True
                             break
                 else:
-                    self.log.info("Valid ASIN/ISBN found, but there's nothing after it")
+                    # self.log.info("Valid ASIN/ISBN found, but there's nothing after it")
+                    pass
             else:
-                self.log.info("Some ID found, but it's not an ASIN/ISBN: %r" % (id_val,))
+                # self.log.info("Some ID found, but it's not an ASIN/ISBN: %r" % (id_val,))
+                pass
         else:
-            self.log.info("'dp' segment found, but it's at the end")
+            # self.log.info("'dp' segment found, but it's at the end")
+            pass
 
         # Save segments if we're an affiliate link (i.e. if we've stripped things).
         if is_affiliate:
             f.path.segments = segments
 
-        self.log.debug("Returning %r, %r, %r" % (is_affiliate, aff_id, f))
         return is_affiliate, aff_id, f
 
     def add(self, f):

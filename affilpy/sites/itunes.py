@@ -9,12 +9,13 @@ class ItunesLink(object):
 
     def detect(self, f):
         siteId = f.query.params.pop('siteID', None)
-        f.query.params.pop('partnerId')
+        f.query.params.pop('partnerId', None)
         return (siteId is not None), siteId, f
 
     def add(self, f):
-        f.query.params['siteID'] = self.config[self.NAME + "_siteID"]
         f.query.params['partnerId'] = self.config[self.NAME + "_partnerId"]
+        f.query.params['siteID'] = self.config[self.NAME + "_siteID"]
+        return f
 
 
 registry = {

@@ -67,7 +67,7 @@ class TestAffiliateEngines(BaseTestCase):
         url = data['url']
 
         # Set the proper affiliate ID in our config.
-        self.config[name] = data['id']
+        self.config.update(data['config'])
 
         # Test adding affiliate link.
         added_url = self.a.add_affiliate(url)

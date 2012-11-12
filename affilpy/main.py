@@ -70,7 +70,7 @@ class AffiliateLinkMgr(object):
         return str(stripped)
 
 
-    def add_affiliate(self, url, strip=True):
+    def add_affiliate(self, url, strip=True, **kwargs):
         """
         This function will attempt to make a given link into an affiliate link.
         If the existing link is already an affiliate link, and the 'strip'
@@ -91,7 +91,7 @@ class AffiliateLinkMgr(object):
         if not reg:
             return url
 
-        return str(reg.add(f))
+        return str(reg.add(f, **kwargs))
 
 
     def _load_script_modules(self):
@@ -117,3 +117,20 @@ class AffiliateLinkMgr(object):
                 if isinstance(v, type):
                     self.registry[k] = v(self.config, child_logger)
 
+
+def make_linkshare_link(token, merchant_id, url):
+    """
+    This function makes building LinkShare links easier.
+    """
+    build_url = "http://getdeeplink.linksynergy.com/createcustomlink.shtml?token={token}&mid={mid}&murl={url}"
+
+    req_url = build_url.format(token=token, mid=merchant_id, url=url)
+
+    r = requests.get(req_url)
+    if r.status is not 200:
+        return None
+
+    if not r.content.startswith('http'):
+        return None
+
+    return r.content
