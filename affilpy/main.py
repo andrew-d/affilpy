@@ -122,6 +122,11 @@ def make_linkshare_link(token, merchant_id, url):
     """
     This function makes building LinkShare links easier.
     """
+    try:
+        import requests
+    except ImportError:
+        return None
+
     build_url = "http://getdeeplink.linksynergy.com/createcustomlink.shtml?token={token}&mid={mid}&murl={url}"
 
     req_url = build_url.format(token=token, mid=merchant_id, url=url)

@@ -1,5 +1,4 @@
 from furl import furl
-import requests
 
 class LinkShareLink(object):
     NAME = "LinkShare"
